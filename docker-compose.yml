@@ -1,0 +1,41 @@
+version: "3.9"
+services:
+  postgres:
+    image: "postgres:15.1-alpine"
+    container_name: test-app-postgres
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: db_test_app
+    restart: always
+  redis:
+    image: "redis:7.0.5-alpine"
+    container_name: test-app-redis
+    ports:
+      - "6379:6379"
+    restart: always
+  nginx:
+    build:
+      context: .
+      dockerfile: nginx/Dockerfile
+    container_name: test-app-nginx
+    ports:
+      - "8080:80"
+    volumes:
+      - ./testapp:/var/www/application
+    links:
+      - fpm
+  fpm:
+    build:
+      context: .
+      dockerfile: php-fpm/Dockerfile
+    container_name: test-app-fpm
+    ports:
+      - "9000:9000"
+    volumes:
+      - ./testapp:/var/www/application
+    links:
+      - postgres
+      - redis
