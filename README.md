@@ -14,11 +14,9 @@
 
 >php artisan db:seed
 
->php artisan queue:work
-
 Если не запускаются команды
 
->docker exec -it test-app-fpm /bin/bash
+>docker exec -it polling-app-fpm /bin/bash
 
 >php artisan migrate
 
@@ -26,12 +24,4 @@
  
 >php artisan db:seed
 
->php artisan queue:work
-
 В директории postman есть сохраненная коллекция запросов.
-
-Для начисления баланса пользователю запустить команду
-
-`php artisan balance:refill`
-
-Указать почту и необходимую сумму в появляющихся prompt.

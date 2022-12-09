@@ -2,25 +2,34 @@ version: "3.9"
 services:
   postgres:
     image: "postgres:15.1-alpine"
-    container_name: test-app-postgres
+    container_name: polling-app-postgres
     ports:
       - "5432:5432"
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
-      POSTGRES_DB: db_test_app
+      POSTGRES_DB: db_polling_app
     restart: always
   redis:
     image: "redis:7.0.5-alpine"
-    container_name: test-app-redis
+    container_name: polling-app-redis
     ports:
       - "6379:6379"
     restart: always
+  rabbitmq:
+    image: "rabbitmq:3.11.4-alpine"
+    container_name: polling-app-queue
+    ports:
+      - "5672:5672"
+    restart: always
+    environment:
+      - RABBITMQ_DEFAULT_USER=rabbit
+      - RABBITMQ_DEFAULT_PASS=rabbit
   nginx:
     build:
       context: .
       dockerfile: nginx/Dockerfile
-    container_name: test-app-nginx
+    container_name: polling-app-nginx
     ports:
       - "8080:80"
     volumes:
@@ -31,11 +40,12 @@ services:
     build:
       context: .
       dockerfile: php-fpm/Dockerfile
-    container_name: test-app-fpm
+    container_name: polling-app-fpm
     ports:
       - "9000:9000"
     volumes:
       - ./testapp:/var/www/application
     links:
+      - rabbitmq
       - postgres
       - redis

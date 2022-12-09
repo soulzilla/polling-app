@@ -8,9 +8,13 @@ use App\Http\Requests\Auth\LoginUserRequest;
 use App\Http\Requests\Auth\RegisterUserRequest;
 use App\Services\UsersService;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Validation\ValidationException;
 
 class PassportAuthController extends Controller
 {
+    /**
+     * @param UsersService $usersService
+     */
     public function __construct(private readonly UsersService $usersService)
     {
     }
@@ -27,10 +31,10 @@ class PassportAuthController extends Controller
         $dto = RegisterUserDTO::instance($data);
 
         if ($token = $this->usersService->register($dto)) {
-            return response()->json(['token' => $token]);
+            return $this->successResponse(['token' => $token]);
         }
 
-        return response()->json(['message' => 'Cannot create user'], 422);
+        return $this->errorResponse('Cannot create user', 422);
     }
 
     /**
@@ -39,6 +43,7 @@ class PassportAuthController extends Controller
      * Для дальнейшей аутентификации выдается токен
      * @param LoginUserRequest $request
      * @return JsonResponse
+     * @throws ValidationException
      */
     public function login(LoginUserRequest $request): JsonResponse
     {
@@ -47,9 +52,9 @@ class PassportAuthController extends Controller
         if (auth()->attempt($data)) {
             /** @var string $token */
             $token = auth()->user()->createToken('LaravelAuthApp')->accessToken;
-            return response()->json(['token' => $token]);
+            return $this->successResponse(['token' => $token]);
         } else {
-            return response()->json(['error' => 'Unauthorized'], 401);
+            return $this->errorResponse('Unauthorized', 401);
         }
     }
 }

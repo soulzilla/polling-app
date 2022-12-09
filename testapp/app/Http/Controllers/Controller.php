@@ -12,12 +12,22 @@ class Controller extends BaseController
 {
     use AuthorizesRequests, DispatchesJobs, ValidatesRequests;
 
-    public function successResponse($data, $status = 200): JsonResponse
+    /**
+     * @param $data
+     * @param int $status
+     * @return JsonResponse
+     */
+    public function successResponse($data, int $status = 200): JsonResponse
     {
         return response()->json($data)->setStatusCode($status);
     }
 
-    public function errorResponse($message, $status = 400): JsonResponse
+    /**
+     * @param $message
+     * @param int $status
+     * @return JsonResponse
+     */
+    public function errorResponse($message, int $status = 400): JsonResponse
     {
         return response()->json(['message' => $message])->setStatusCode($status);
     }

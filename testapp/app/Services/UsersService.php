@@ -3,10 +3,17 @@
 namespace App\Services;
 
 use App\DTO\RegisterUserDTO;
-use App\Models\User;
+use App\Repositories\UserRepository;
 
 class UsersService
 {
+    /**
+     * @param UserRepository $repository
+     */
+    public function __construct(private readonly UserRepository $repository)
+    {
+    }
+
     /**
      * Регистрация нового пользователя
      * @param RegisterUserDTO $dto
@@ -14,13 +21,6 @@ class UsersService
      */
     public function register(RegisterUserDTO $dto): string
     {
-        /** @var User $user */
-        $user = User::query()->create([
-            'name' => $dto->name,
-            'email' => $dto->email,
-            'password' => bcrypt($dto->password)
-        ]);
-
-        return $user->createToken('LaravelAuthApp')->accessToken;
+        return $this->repository->register($dto);
     }
 }
