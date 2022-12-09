@@ -24,4 +24,6 @@
  
 >php artisan db:seed
 
+>php artisan queue:work
+
 В директории postman есть сохраненная коллекция запросов.
